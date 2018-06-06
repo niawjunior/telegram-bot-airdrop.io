@@ -39,6 +39,8 @@ section {
             <h4>Telegram: <span id="telegram_username">...</span></h4>
             <br>
             <h4>Ethereum wallet: <span id="ethereum_wallet">...</span></h4>
+            <br>
+            <h4>Status: <span id="status">...</span></h4>
           </div>
         </div>
       </div>
@@ -74,6 +76,8 @@ db.child(id).once("value", snapshot => {
     document.getElementById('email').innerHTML = snapshot.val().email
     document.getElementById('telegram_username').innerHTML = snapshot.val().telegram_username
     document.getElementById('ethereum_wallet').innerHTML = snapshot.val().wallet
+    document.getElementById('status').innerHTML = snapshot.val().status
+    
     
 })
 </script>

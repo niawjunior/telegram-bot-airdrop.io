@@ -91,14 +91,14 @@ if (select_text.indexOf("4. ETH address (No exchange wallet!") === 0) {
             })
             firebase.auth().signInWithEmailAndPassword(email, password).then((response) => {
                 var db = firebase.database().ref('Airdrop');
-                var key = db.push().key;
-                db.child(key).update({
+                db.child(e_wallet.toLocaleLowerCase()).update({
                     telegram_username: t_username,
                     email: u_email,
                     wallet: e_wallet.toLocaleLowerCase(),
+                    status: 'pending',
                     createAt: Date.now()
                 }).then(() => {
-                    bot.sendMessage(msg.chat.id, "Check your account 👉 "+ 'https://www.website.com?id'+e_wallet.toLocaleLowerCase())
+                    bot.sendMessage(msg.chat.id, "Check your account 👉 "+ 'https://niawjunior.github.io/telegram-bot-airdrop.io/index.html?id='+e_wallet.toLocaleLowerCase())
                 }).catch((err) => {
                     console.log(err)
                 })
