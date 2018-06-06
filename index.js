@@ -3,7 +3,9 @@ let token = require('./config');
 token = token.token;
 const bot = new TelegramBot(token, {polling: true});
 const img_url = 'http://4.bp.blogspot.com/-UWigFFa17fw/Vf1H-c2MGyI/AAAAAAAGbDs/DqbEz3kFXQY/s1600/TW004859.png'
-
+var t_username = '';
+var u_email = '';
+var e_wallet = '';
 bot.on('message', (msg) => {
 var select_text = msg.text;
 if( select_text.toLowerCase().indexOf("/start") === 0) {
@@ -34,6 +36,7 @@ if (select_text.indexOf("2. Your Telegram Username") === 0) {
     var i = 0;
     bot.on('message',msg_name => {
         if(select_text.indexOf('2. Your Telegram Username') === 0 && msg_name.text.toString().includes('@') && i < 1) {
+            t_username = msg_name.text;
             bot.sendMessage(msg.chat.id, "Hello "+msg_name.text);
             i++;
         }
@@ -45,6 +48,7 @@ if (select_text.indexOf("3. E-mail address") === 0) {
     var re = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm;
     bot.on('message',msg_email => {
         if(select_text.indexOf('3. E-mail address') === 0  && re.test(msg_email.text) && i < 1) {
+            u_email = msg_email.text;
             bot.sendMessage(msg.chat.id, "Email address: "+msg_email.text);
             i++;
         }
@@ -54,12 +58,11 @@ if (select_text.indexOf("3. E-mail address") === 0) {
 if (select_text.indexOf("4. ETH address (No exchange wallet!") === 0) {
     bot.sendMessage(msg.chat.id, "Make sure that you have an erc20 wallet (0x) 🔑")
     var i = 0;
-    var eth_wallet = '';
-    bot.on('message',msg_name => {
+    bot.on('message',eth_wallet => {
         if(select_text.indexOf('4. ETH address (No exchange wallet!') === 0  && i < 1) {
-            eth_wallet = msg_name.text;
-            bot.sendMessage(msg.chat.id, "Ethereum wallet: "+msg_name.text).then(() => {
-                if(eth_wallet.toString().includes('0x')) {
+            bot.sendMessage(msg.chat.id, "Ethereum wallet: "+eth_wallet.text).then(() => {
+                if(eth_wallet.text.toString().includes('0x')) {
+                    e_wallet = eth_wallet.text;
                     bot.sendMessage(msg.chat.id, 'Confirm❓', {
                         reply_markup: {
                           inline_keyboard: [
@@ -78,6 +81,9 @@ if (select_text.indexOf("4. ETH address (No exchange wallet!") === 0) {
         var i = 0;
         if(answer === '1' && i < 1) {
             bot.sendMessage(msg.chat.id, "Thank'you 🙏🙏"); 
+            console.log(t_username)
+            console.log(u_email)
+            console.log(e_wallet)
         } 
         if(answer === '0' && i < 1) {
             bot.sendMessage(msg.chat.id, "Good bye ✌️✌️"); 
