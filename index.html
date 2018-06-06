@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Domeno | Airdrop</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+<style>
+header {
+  padding: 154px 0 100px;
+}
+
+@media (min-width: 992px) {
+  header {
+    padding: 156px 0 100px;
+  }
+}
+
+section {
+  padding: 150px 0;
+}
+</style>
+ <body id="page-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">DOMENO AIRDROP</a>
+      </div>
+    </nav>
+    <section id="contact">
+      <div class="container">
+        <div class="row">
+          <div class="mx-auto">
+            <h4>Email: <span id="email">...</span></h4>
+            <br>
+            <h4>Telegram: <span id="telegram_username">...</span></h4>
+            <br>
+            <h4>Ethereum wallet: <span id="ethereum_wallet">...</span></h4>
+          </div>
+        </div>
+      </div>
+    </section>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+<script>
+  var config = {
+    apiKey: "AIzaSyBAu6N0lMSbUA7YNv70l3N7h-iVMGFHRL8",
+    authDomain: "airdrop-bot-b8427.firebaseapp.com",
+    databaseURL: "https://airdrop-bot-b8427.firebaseio.com",
+    projectId: "airdrop-bot-b8427",
+    storageBucket: "airdrop-bot-b8427.appspot.com",
+    messagingSenderId: "13313106206"
+  };
+  firebase.initializeApp(config);
+</script>
+<script>
+function getUrlVars(){
+  let vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+    vars[key] = value;
+  });
+  return vars;
+}
+var id = (getUrlVars()["id"]);
+var db = firebase.database().ref('Airdrop');
+db.child(id).once("value", snapshot => {
+    console.log(snapshot.val())
+    document.getElementById('email').innerHTML = snapshot.val().email
+    document.getElementById('telegram_username').innerHTML = snapshot.val().telegram_username
+    document.getElementById('ethereum_wallet').innerHTML = snapshot.val().wallet
+    
+})
+</script>
+</html>

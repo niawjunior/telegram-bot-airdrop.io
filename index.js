@@ -1,6 +1,12 @@
 const TelegramBot = require('node-telegram-bot-api');
-let token = require('./config');
-token = token.token;
+var config = require('./config')
+var firebase = require('firebase')
+var email = config.user.email
+var password = config.user.password
+var firebase_config = config.firebase_config;
+var token = config.token;
+firebase.initializeApp(firebase_config);
+
 const bot = new TelegramBot(token, {polling: true});
 const img_url = 'http://4.bp.blogspot.com/-UWigFFa17fw/Vf1H-c2MGyI/AAAAAAAGbDs/DqbEz3kFXQY/s1600/TW004859.png'
 var t_username = '';
@@ -80,10 +86,23 @@ if (select_text.indexOf("4. ETH address (No exchange wallet!") === 0) {
         var answer = callbackQuery.data;
         var i = 0;
         if(answer === '1' && i < 1) {
-            bot.sendMessage(msg.chat.id, "Thank'you 🙏🙏"); 
-            console.log(t_username)
-            console.log(u_email)
-            console.log(e_wallet)
+            bot.sendMessage(msg.chat.id, "Thank'you 🙏🙏 \n"); 
+            bot.sendMessage(msg.chat.id, `Telegram username: ${t_username} \n Email: ${u_email} \n Ethereum wallet: ${e_wallet} \n`).then(() => {
+            })
+            firebase.auth().signInWithEmailAndPassword(email, password).then((response) => {
+                var db = firebase.database().ref('Airdrop');
+                var key = db.push().key;
+                db.child(key).update({
+                    telegram_username: t_username,
+                    email: u_email,
+                    wallet: e_wallet.toLocaleLowerCase(),
+                    createAt: Date.now()
+                }).then(() => {
+                    bot.sendMessage(msg.chat.id, "Check your account 👉 "+ 'https://www.website.com?id'+e_wallet.toLocaleLowerCase())
+                }).catch((err) => {
+                    console.log(err)
+                })
+            })
         } 
         if(answer === '0' && i < 1) {
             bot.sendMessage(msg.chat.id, "Good bye ✌️✌️"); 
