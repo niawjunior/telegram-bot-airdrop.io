@@ -12,102 +12,103 @@ const img_url = 'http://4.bp.blogspot.com/-UWigFFa17fw/Vf1H-c2MGyI/AAAAAAAGbDs/D
 var t_username = '';
 var u_email = '';
 var e_wallet = '';
-bot.on('message', (msg) => {
-var select_text = msg.text;
-if( select_text.toLowerCase().indexOf("/start") === 0) {
+
+bot.onText(/\/start/, (msg) => {
     bot.sendPhoto(msg.chat.id,img_url).then(() => {
-        bot.sendMessage(msg.chat.id, "Welcome to Domeno Airdrop! 😍😍😍 \nPlease join our community and get 100 token.", {
+        var option = {
             "reply_markup": {
                 "keyboard": [["1. Join the Domeno Telegram group", "2. Your Telegram Username"],   ["3. E-mail address" , "4. ETH address (No exchange wallet!)"]]
                 }
-        });
+        };
+        bot.sendMessage(msg.chat.id, "Welcome to Domeno Airdrop! 😍😍😍 \nPlease join our community and get 100 token.",option);
     })
-}
-if (select_text.indexOf("1. Join the Domeno Telegram group") === 0) {
-    var text = 'Domeno Telegram Group';
-    var keyboardStr = JSON.stringify({
-        inline_keyboard: [
-        [
-            {text:'Join the chat',url:'https://t.me/joinchat/FP5H8RIFast0BbjwqiO1_w'}
-        ]
-        ]
-    });
+})
 
-    var keyboard = {reply_markup: JSON.parse(keyboardStr)};
-    bot.sendMessage(msg.chat.id,text,keyboard);
-}
+bot.on('message', (msg) => {
+    var send_text = msg.text;
+    var step1_text = '1. Join the Domeno Telegram group'
+    if (send_text.toString().indexOf(step1_text) === 0) {
+        var text = 'Domeno Telegram Group';
+        var keyboardStr = JSON.stringify({
+            inline_keyboard: [
+            [
+                {text:'Join the chat',url:'https://t.me/joinchat/FP5H8RIFast0BbjwqiO1_w'}
+            ]
+            ]
+        });
 
-if (select_text.indexOf("2. Your Telegram Username") === 0) {
-    bot.sendMessage(msg.chat.id, "Please Enter Your Telegram Username (@username)")
-    var i = 0;
-    bot.on('message',msg_name => {
-        if(select_text.indexOf('2. Your Telegram Username') === 0 && msg_name.text.toString().includes('@') && i < 1) {
-            t_username = msg_name.text;
-            bot.sendMessage(msg.chat.id, "Hello "+msg_name.text);
-            i++;
-        }
-    });
-}
-if (select_text.indexOf("3. E-mail address") === 0) {
-    bot.sendMessage(msg.chat.id, "Enter your email address")
-    var i = 0;
+        var keyboard = {reply_markup: JSON.parse(keyboardStr)};
+        bot.sendMessage(msg.chat.id,text,keyboard);
+    }
+
+    var step2_text = '2. Your Telegram Username';
+    if (send_text.toString().indexOf(step2_text) === 0) {
+        bot.sendMessage(msg.chat.id, "Please Enter Your Telegram Username (@username)")
+    }
+
+    if(send_text.toString().charAt(0) === '@') {
+        t_username = send_text;
+        bot.sendMessage(msg.chat.id, "Hello "+send_text);
+    }
+
+    var step3_text = '3. E-mail address';
+    if(send_text.toString().indexOf(step3_text) === 0) {
+        bot.sendMessage(msg.chat.id, "Enter your email address")
+    }
+    
     var re = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm;
-    bot.on('message',msg_email => {
-        if(select_text.indexOf('3. E-mail address') === 0  && re.test(msg_email.text) && i < 1) {
-            u_email = msg_email.text;
-            bot.sendMessage(msg.chat.id, "Email address: "+msg_email.text);
-            i++;
-        }
-    });
-}
+    
+    if(re.test(send_text)) {
+        u_email = send_text;
+        bot.sendMessage(msg.chat.id, "Email address: "+send_text);
+    }
 
-if (select_text.indexOf("4. ETH address (No exchange wallet!") === 0) {
-    bot.sendMessage(msg.chat.id, "Make sure that you have an erc20 wallet (0x) 🔑")
-    var i = 0;
-    bot.on('message',eth_wallet => {
-        if(select_text.indexOf('4. ETH address (No exchange wallet!') === 0  && i < 1) {
-            bot.sendMessage(msg.chat.id, "Ethereum wallet: "+eth_wallet.text).then(() => {
-                if(eth_wallet.text.toString().includes('0x')) {
-                    e_wallet = eth_wallet.text;
-                    bot.sendMessage(msg.chat.id, 'Confirm❓', {
-                        reply_markup: {
-                          inline_keyboard: [
-                           [{"text": "Yes ✅", "callback_data": "1"}],
-                           [{"text": "Cancel ❌",  "callback_data": "0"}]
-                        ]
-                        }
-                      })
+    var step4_text = '4. ETH address (No exchange wallet!)';
+    if(send_text.toString().indexOf(step4_text) === 0) {
+        bot.sendMessage(msg.chat.id, "Make sure that you have an erc20 wallet (0x) 🔑")
+    }
+    var re_eth = /^0x[a-fA-F0-9]{40}$/g
+    if(re_eth.test(send_text)) {
+        e_wallet = send_text;
+        bot.sendMessage(msg.chat.id, 'Confirm❓', {
+            reply_markup: {
+              keyboard: [
+               [{"text": "Yes ✅"}],
+               [{"text": "Cancel ❌"}]
+            ]
+            }
+         })
+    }
+    var confirm = 'Yes ✅';
+    if(send_text.toString().indexOf(confirm) === 0) {
+        firebase.auth().signInWithEmailAndPassword(email, password).then((response) => {
+            var db = firebase.database().ref('Airdrop');
+            db.child(e_wallet.toLocaleLowerCase()).once('value', snap => {
+                if(!snap.exists()) {
+                    db.child(e_wallet.toLocaleLowerCase()).update({
+                        telegram_username: t_username,
+                        email: u_email,
+                        wallet: e_wallet.toLocaleLowerCase(),
+                        status: 'pending',
+                        createAt: Date.now()
+                    }).then(() => {
+                        bot.sendMessage(msg.chat.id, "Thank'you 🙏🙏 \n"); 
+                        bot.sendMessage(msg.chat.id, `Telegram username: ${t_username} \n Email: ${u_email} \n Ethereum wallet: ${e_wallet} \n`).then(() => {
+                        bot.sendMessage(msg.chat.id, "Check your account 👉 "+ 'https://niawjunior.github.io/telegram-bot-airdrop.io/index.html?id='+e_wallet.toLocaleLowerCase())
+
+                        })
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                } else {
+                    bot.sendMessage(msg.chat.id, "This wallet is already in use")
                 }
             })
-            i++;
-        }
-    })
-    bot.on('callback_query', function onCallbackQuery(callbackQuery) {
-        var answer = callbackQuery.data;
-        var i = 0;
-        if(answer === '1' && i < 1) {
-            bot.sendMessage(msg.chat.id, "Thank'you 🙏🙏 \n"); 
-            bot.sendMessage(msg.chat.id, `Telegram username: ${t_username} \n Email: ${u_email} \n Ethereum wallet: ${e_wallet} \n`).then(() => {
-            })
-            firebase.auth().signInWithEmailAndPassword(email, password).then((response) => {
-                var db = firebase.database().ref('Airdrop');
-                db.child(e_wallet.toLocaleLowerCase()).update({
-                    telegram_username: t_username,
-                    email: u_email,
-                    wallet: e_wallet.toLocaleLowerCase(),
-                    status: 'pending',
-                    createAt: Date.now()
-                }).then(() => {
-                    bot.sendMessage(msg.chat.id, "Check your account 👉 "+ 'https://niawjunior.github.io/telegram-bot-airdrop.io/index.html?id='+e_wallet.toLocaleLowerCase())
-                }).catch((err) => {
-                    console.log(err)
-                })
-            })
-        } 
-        if(answer === '0' && i < 1) {
-            bot.sendMessage(msg.chat.id, "Good bye ✌️✌️"); 
-        }
-        i++
-     });
+        })
     }
-})
+    var calcel = 'Cancel ❌';
+    if(send_text.toString().indexOf(calcel) === 0) {
+        bot.sendMessage(msg.chat.id, "Good bye ✌️✌️"); 
+    }
+});
+
