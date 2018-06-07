@@ -20,7 +20,7 @@ bot.onText(/\/start/, (msg) => {
                 "keyboard": [["1. Join the Domeno Telegram group", "2. Your Telegram Username"],   ["3. E-mail address" , "4. ETH address (No exchange wallet!)"]]
                 }
         };
-        bot.sendMessage(msg.chat.id, "Welcome to Domeno Airdrop! 😍😍😍 \nPlease join our community and get 100 token.",option);
+        bot.sendMessage(msg.chat.id, "Welcome to Domeno Airdrop! 😍😍 \nPlease join our community and get 100 token.\n \n Airdrop Rules \n 1. Join the Domeno Telegram group \n 2. Your Telegram Username \n 3. E-mail address \n 4. ETH address (No exchange wallet!) \n",option);
     })
 })
 
@@ -75,7 +75,8 @@ bot.on('message', (msg) => {
               keyboard: [
                [{"text": "Yes ✅"}],
                [{"text": "Cancel ❌"}]
-            ]
+            ],
+            resize_keyboard: true
             }
          })
     }
