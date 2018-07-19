@@ -9,12 +9,6 @@ var config = {
     storageBucket: "airdrop-bot-b8427.appspot.com",
     messagingSenderId: "13313106206"
 };
-// firebase account
-var user = {
-    email: '',
-    password: '',
-}
 
-exports.user = user;
 exports.token = token;
 exports.firebase_config = config;

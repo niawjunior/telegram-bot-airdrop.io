@@ -1,8 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 var config = require('./config')
 var firebase = require('firebase')
-var email = config.user.email
-var password = config.user.password
+
 var firebase_config = config.firebase_config;
 var token = config.token;
 firebase.initializeApp(firebase_config);
@@ -82,7 +81,6 @@ bot.on('message', (msg) => {
     }
     var confirm = 'Yes ✅';
     if(send_text.toString().indexOf(confirm) === 0) {
-        firebase.auth().signInWithEmailAndPassword(email, password).then((response) => {
             var db = firebase.database().ref('Airdrop');
             db.child(e_wallet.toLocaleLowerCase()).once('value', snap => {
                 if(!snap.exists()) {
@@ -105,7 +103,6 @@ bot.on('message', (msg) => {
                     bot.sendMessage(msg.chat.id, "This wallet is already in use")
                 }
             })
-        })
     }
     var calcel = 'Cancel ❌';
     if(send_text.toString().indexOf(calcel) === 0) {
